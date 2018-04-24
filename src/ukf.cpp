@@ -121,6 +121,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 				-0.0020,    0.0060,    0.0008,    0.0100,    0.0123;
 
 
+		previous_timestamp_ = meas_package.timestamp_;
 
 		is_initialized_ = true;
 
@@ -197,7 +198,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   You'll also need to calculate the lidar NIS.
 	 */
 
-	cout << "Lindar\n";
+	cout << "Lidar\n";
 }
 
 /**
