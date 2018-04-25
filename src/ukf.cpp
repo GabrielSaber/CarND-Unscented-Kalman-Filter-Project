@@ -410,15 +410,6 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 	//set measurement dimension, radar can measure r, phi, and r_dot
 	int n_z = 3;
 
-	//radar measurement noise standard deviation radius in m
-	double std_radr = 0.3;
-
-	//radar measurement noise standard deviation angle in rad
-	double std_radphi = 0.0175;
-
-	//radar measurement noise standard deviation radius change in m/s
-	double std_radrd = 0.1;
-
 
 	//transform sigma points into measurement space
 	for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
@@ -458,9 +449,9 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 
 	//add measurement noise covariance matrix
 	MatrixXd R = MatrixXd(n_z,n_z);
-	R <<    std_radr*std_radr, 0, 0,
-			0, std_radphi*std_radphi, 0,
-			0, 0,std_radrd*std_radrd;
+	R <<    std_radr_*std_radr_, 0, 0,
+			0, std_radphi_*std_radphi_, 0,
+			0, 0,std_radrd_*std_radrd_;
 	S = S + R;
 
 	/*
@@ -476,12 +467,6 @@ void UKF::PredictLidarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 
 	//set measurement dimension, radar can measure r, phi, and r_dot
 	int n_z = 2;
-
-	//radar measurement noise standard deviation radius in m
-	double std_px = 0.1;
-
-	//radar measurement noise standard deviation angle in rad
-	double std_py = 0.1;
 
 	//transform sigma points into measurement space
 	for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
@@ -516,8 +501,8 @@ void UKF::PredictLidarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 
 	//add measurement noise covariance matrix
 	MatrixXd R = MatrixXd(n_z,n_z);
-	R <<    std_px*std_px, 0,
-			0, std_py*std_py;
+	R <<    std_laspx_*std_laspx_, 0,
+			0, std_laspy_*std_laspy_;
 	S = S + R;
 
 	/*
