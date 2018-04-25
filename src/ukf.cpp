@@ -365,6 +365,9 @@ void UKF::PredictMeanAndCovariance() {
 		while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
 		while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
+		while (x_diff(4)> M_PI) x_diff(4)-=2.*M_PI;
+		while (x_diff(4)<-M_PI) x_diff(4)+=2.*M_PI;
+
 		P_ = P_ + weights(i) * x_diff * x_diff.transpose() ;
 	}
 	/*
@@ -488,6 +491,9 @@ void UKF::UpdateState(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S) {
 		while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
 		while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
 
+		while (x_diff(4)> M_PI) x_diff(4)-=2.*M_PI;
+		while (x_diff(4)<-M_PI) x_diff(4)+=2.*M_PI;
+
 		Tc = Tc + weights(i) * x_diff * z_diff.transpose();
 	}
 
@@ -509,26 +515,5 @@ void UKF::UpdateState(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S) {
 	//print result
 	std::cout << "Updated state x: " << std::endl << x_ << std::endl;
 	std::cout << "Updated state covariance P: " << std::endl << P_ << std::endl;
-
-
-
-
-	/* expected result x:
-     x =
- 5.92276
- 1.41823
- 2.15593
-0.489274
-0.321338
-	 */
-
-	/* expected result P:
-     P =
-  0.00361579 -0.000357881   0.00208316 -0.000937196  -0.00071727
--0.000357881   0.00539867   0.00156846   0.00455342   0.00358885
-  0.00208316   0.00156846   0.00410651   0.00160333   0.00171811
--0.000937196   0.00455342   0.00160333   0.00652634   0.00669436
- -0.00071719   0.00358884   0.00171811   0.00669426   0.00881797
-	 */
 
 }
