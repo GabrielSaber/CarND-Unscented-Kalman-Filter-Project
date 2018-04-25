@@ -60,6 +60,8 @@ UKF::UKF() {
 	n_aug_ = 7;
 	lambda_ =  3 - n_aug_;
 
+	weights_ = VectorXd(2*n_aug_+1);
+
 	P_ = MatrixXd(n_x_, n_x_);
 	x_ = VectorXd(n_x_);
 
@@ -122,6 +124,15 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
 
 
 		previous_timestamp_ = meas_package.timestamp_;
+
+
+		//set vector for weights
+		double weight_0 = lambda_/(lambda_+n_aug_);
+		weights_(0) = weight_0;
+		for (int i=1; i<2*n_aug_+1; i++) {  //2n+1 weights
+			double weight = 0.5/(n_aug_+lambda_);
+			weights_(i) = weight;
+		}
 
 		is_initialized_ = true;
 
@@ -338,21 +349,10 @@ void UKF::SigmaPointPrediction(MatrixXd Xsig_aug, double delta_t) {
 
 void UKF::PredictMeanAndCovariance() {
 
-	//create vector for weights
-	VectorXd weights = VectorXd(2*n_aug_+1);
-
-	// set weights
-	double weight_0 = lambda_ / (lambda_ + n_aug_);
-	weights(0) = weight_0;
-	for (int i = 1; i < 2 * n_aug_+1; i++) {  //2n+1 weights
-		double weight = 0.5/(n_aug_+lambda_);
-		weights(i) = weight;
-	}
-
 	//predicted state mean
 	x_.fill(0.0);
 	for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //iterate over sigma points
-		x_ = x_ + weights(i) * Xsig_pred_.col(i);
+		x_ = x_ + weights_(i) * Xsig_pred_.col(i);
 	}
 
 	//predicted state covariance matrix
@@ -368,7 +368,7 @@ void UKF::PredictMeanAndCovariance() {
 		while (x_diff(4)> M_PI) x_diff(4)-=2.*M_PI;
 		while (x_diff(4)<-M_PI) x_diff(4)+=2.*M_PI;
 
-		P_ = P_ + weights(i) * x_diff * x_diff.transpose() ;
+		P_ = P_ + weights_(i) * x_diff * x_diff.transpose() ;
 	}
 	/*
 	//print result
@@ -385,15 +385,6 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 
 	//set measurement dimension, radar can measure r, phi, and r_dot
 	int n_z = 3;
-
-	//set vector for weights
-	VectorXd weights = VectorXd(2*n_aug_+1);
-	double weight_0 = lambda_/(lambda_+n_aug_);
-	weights(0) = weight_0;
-	for (int i=1; i<2*n_aug_+1; i++) {
-		double weight = 0.5/(n_aug_+lambda_);
-		weights(i) = weight;
-	}
 
 	//radar measurement noise standard deviation radius in m
 	double std_radr = 0.3;
@@ -426,7 +417,7 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 
 	z_pred.fill(0.0);
 	for (int i=0; i < 2*n_aug_+1; i++) {
-		z_pred = z_pred + weights(i) * Zsig.col(i);
+		z_pred = z_pred + weights_(i) * Zsig.col(i);
 	}
 
 	S.fill(0.0);
@@ -438,7 +429,7 @@ void UKF::PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 		while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
 		while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
 
-		S = S + weights(i) * z_diff * z_diff.transpose();
+		S = S + weights_(i) * z_diff * z_diff.transpose();
 	}
 
 	//add measurement noise covariance matrix
@@ -460,17 +451,6 @@ void UKF::UpdateState(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S) {
 
 	//set measurement dimension, radar can measure r, phi, and r_dot
 	int n_z = 3;
-
-
-	//set vector for weights
-	VectorXd weights = VectorXd(2*n_aug_+1);
-	double weight_0 = lambda_/(lambda_+n_aug_);
-	weights(0) = weight_0;
-	for (int i=1; i<2*n_aug_+1; i++) {  //2n+1 weights
-		double weight = 0.5/(n_aug_+lambda_);
-		weights(i) = weight;
-	}
-
 
 	//create matrix for cross correlation Tc
 	MatrixXd Tc = MatrixXd(n_x_, n_z);
@@ -494,7 +474,7 @@ void UKF::UpdateState(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S) {
 		while (x_diff(4)> M_PI) x_diff(4)-=2.*M_PI;
 		while (x_diff(4)<-M_PI) x_diff(4)+=2.*M_PI;
 
-		Tc = Tc + weights(i) * x_diff * z_diff.transpose();
+		Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
 	}
 
 	//Kalman gain K;
