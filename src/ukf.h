@@ -113,7 +113,10 @@ private :
 	  void PredictMeanAndCovariance();
 
 	  void PredictRadarMeasurement(MatrixXd& Zsig, VectorXd& z_out, MatrixXd& S_out);
-	  void UpdateState(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S);
+	  void UpdateStateRadar(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S);
+
+	  void PredictLidarMeasurement(MatrixXd& Zsig, VectorXd& z_out, MatrixXd& S_out);
+	  void UpdateStateLidar(VectorXd z, MatrixXd Zsig, VectorXd z_pred, MatrixXd S);
 };
 
 #endif /* UKF_H */
