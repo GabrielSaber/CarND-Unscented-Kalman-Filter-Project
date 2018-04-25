@@ -489,11 +489,6 @@ void UKF::PredictLidarMeasurement(MatrixXd& Zsig, VectorXd& z_pred, MatrixXd& S)
 		// extract values for better readibility
 		double px = Xsig_pred_(0,i);
 		double py = Xsig_pred_(1,i);
-		double v  = Xsig_pred_(2,i);
-		double yaw = Xsig_pred_(3,i);
-
-		double v1 = cos(yaw)*v;
-		double v2 = sin(yaw)*v;
 
 		// measurement model
 		Zsig(0,i) = px;
