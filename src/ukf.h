@@ -31,9 +31,6 @@ public:
 	///* predicted sigma points matrix
 	MatrixXd Xsig_pred_;
 
-	///* time when the state is true, in us
-	long long time_us_;
-
 	// previous timestamp
 	long long previous_timestamp_;
 
@@ -69,6 +66,11 @@ public:
 
 	///* Sigma point spreading parameter
 	double lambda_;
+
+	int nz_radar_;
+	int nz_lidar_;
+	MatrixXd R_radar_;
+	MatrixXd R_lidar_;
 
 
 	/**
